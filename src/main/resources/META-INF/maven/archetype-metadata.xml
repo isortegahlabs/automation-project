@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <archetype-descriptor name="isortegah-archetype-cucumber-testng">
+        <requiredProperties>
+                <requiredProperty key="groupId">
+                    <defaultValue>com.isortegah</defaultValue>
+                </requiredProperty>
+                <requiredProperty key="name"/>
+                <requiredProperty key="version"/>
+        </requiredProperties>
+        <fileSets>
+            <fileSet filtered="true">
+                <directory>scripts/</directory>
+                <includes>
+                    <include>Dockerfile</include>
+                </includes>
+            </fileSet>
+            <fileSet filtered="true" packaged="true">
+                <directory>src/test/java</directory>
+                <includes>
+                    <include>**/*.java</include>
+                </includes>
+            </fileSet>
+            <fileSet>
+                <directory>src/test/resources/features</directory>
+                <includes>
+                    <include>*.feature</include>
+                </includes>
+            </fileSet>
+        </fileSets>
+    </archetype-descriptor>
