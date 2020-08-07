@@ -1,4 +1,9 @@
+# Automation Project
 
+## Prerequisitos
+
+* Verificar versión de chromedriver
+* Ubicación de binario de firefox
 
 Revisión de opciones 
 
