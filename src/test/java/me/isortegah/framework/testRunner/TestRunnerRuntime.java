@@ -1,8 +1,8 @@
-package com.isortegah.framework.testRunner;
+package me.isortegah.framework.testRunner;
 
-import com.isortegah.framework.libs.CucumberRunner;
-import com.isortegah.framework.libs.TestNGCucumberRunnerCustom;
-import com.isortegah.framework.util.DateUtil;
+import me.isortegah.framework.libs.CucumberRunner;
+import me.isortegah.framework.libs.TestNGCucumberRunnerCustom;
+import me.isortegah.framework.util.DateUtil;
 import cucumber.api.CucumberOptions;
 import cucumber.api.testng.CucumberFeatureWrapper;
 import cucumber.api.testng.PickleEventWrapper;
@@ -16,6 +16,7 @@ import org.testng.annotations.Test;
 import java.net.URISyntaxException;
 
 @CucumberOptions(features = "src/test/resources/features",
+        glue = "me.isortegah.framework.steps",
         plugin = {"pretty"})
 public class TestRunnerRuntime {
 

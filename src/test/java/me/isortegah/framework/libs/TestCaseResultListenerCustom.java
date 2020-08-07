@@ -1,4 +1,4 @@
-package com.isortegah.framework.libs;
+package me.isortegah.framework.libs;
 
 import cucumber.api.Result;
 import cucumber.api.event.EventHandler;

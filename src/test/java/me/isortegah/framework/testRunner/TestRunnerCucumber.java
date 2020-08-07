@@ -1,6 +1,6 @@
-package com.isortegah.framework.testRunner;
+package me.isortegah.framework.testRunner;
 
-import com.isortegah.framework.util.DateUtil;
+import me.isortegah.framework.util.DateUtil;
 import cucumber.api.CucumberOptions;
 import cucumber.api.testng.CucumberFeatureWrapper;
 import cucumber.api.testng.PickleEventWrapper;
@@ -13,7 +13,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 @CucumberOptions(features = "classpath:features",
-        glue = "com.isortegah.framework.steps",
+        glue = "me.isortegah.framework.steps",
         plugin = {"pretty"})
 public class TestRunnerCucumber {
 

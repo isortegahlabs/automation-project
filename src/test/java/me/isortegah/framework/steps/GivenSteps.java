@@ -1,4 +1,4 @@
-package com.isortegah.framework.steps;
+package me.isortegah.framework.steps;
 
 import com.google.inject.Inject;
 import cucumber.api.java.en.Given;

@@ -1,4 +1,4 @@
-package com.isortegah.framework.libs;
+package me.isortegah.framework.libs;
 
 import cucumber.api.event.TestRunFinished;
 import cucumber.api.event.TestRunStarted;
@@ -38,7 +38,7 @@ public class TestNGCucumberRunnerCustom {
         runtimeOptions.getGlue();
         List<URI> uniqueGlue = new ArrayList<>();
 
-        uniqueGlue.add(new URI("classpath:com/isortegah/framework/steps"));
+        uniqueGlue.add(new URI("classpath:me/isortegah/framework/steps"));
 
         runtimeOptions.getGlue().clear();
         runtimeOptions.getGlue().addAll(uniqueGlue);

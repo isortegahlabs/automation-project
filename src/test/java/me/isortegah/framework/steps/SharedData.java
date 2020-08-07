@@ -1,6 +1,6 @@
-package com.isortegah.framework.steps;
+package me.isortegah.framework.steps;
 
-import com.isortegah.framework.libs.selenium.BrowserDriver;
+import me.isortegah.framework.libs.selenium.BrowserDriver;
 import cucumber.runtime.java.guice.ScenarioScoped;
 
 import java.lang.management.ManagementFactory;

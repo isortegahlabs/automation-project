@@ -1,4 +1,4 @@
-package com.isortegah.framework.testRunner;
+package me.isortegah.framework.testRunner;
 
 import cucumber.api.CucumberOptions;
 import cucumber.api.testng.AbstractTestNGCucumberTests;
@@ -6,7 +6,7 @@ import org.testng.annotations.DataProvider;
 
 
 @CucumberOptions(features = "src/test/resources/features",
-        glue = "com.isortegah.framework.steps",
+        glue = "me.isortegah.framework.steps",
         tags = "@current",
         plugin = {"pretty"})
 public class TestRunnerAbstract extends AbstractTestNGCucumberTests {

@@ -3,7 +3,7 @@
     <module name="testNg" />
     <extension name="coverage">
       <pattern>
-        <option name="PATTERN" value="com.isortegah.framework.testRunner.*" />
+        <option name="PATTERN" value="me.isortegah.framework.testRunner.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>

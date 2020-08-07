@@ -1,4 +1,4 @@
-package com.isortegah.framework.libs;
+package me.isortegah.framework.libs;
 
 import cucumber.api.testng.PickleEventWrapper;
 import cucumber.runtime.CucumberException;

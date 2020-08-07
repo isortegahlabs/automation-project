@@ -1,4 +1,4 @@
-package com.isortegah.framework.util;
+package me.isortegah.framework.util;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

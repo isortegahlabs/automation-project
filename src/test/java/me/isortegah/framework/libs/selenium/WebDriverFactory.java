@@ -1,4 +1,4 @@
-package com.isortegah.framework.libs.selenium;
+package me.isortegah.framework.libs.selenium;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;

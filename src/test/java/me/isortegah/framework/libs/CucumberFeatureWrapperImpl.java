@@ -1,4 +1,4 @@
-package com.isortegah.framework.libs;
+package me.isortegah.framework.libs;
 
 import cucumber.api.testng.CucumberFeatureWrapper;
 import cucumber.runtime.model.CucumberFeature;
