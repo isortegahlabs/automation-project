@@ -1,7 +1,7 @@
 package me.isortegah.framework.steps;
 
 import com.google.inject.Inject;
-import cucumber.api.java.en.Given;
+import io.cucumber.java.en.Given;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

@@ -1,8 +1,7 @@
 package me.isortegah.framework.steps;
 
 import com.google.inject.Inject;
-import me.isortegah.framework.libs.selenium.BrowserDriver;
-import cucumber.api.java8.En;
+import io.cucumber.java8.En;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

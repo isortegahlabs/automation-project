@@ -1,10 +1,10 @@
 package me.isortegah.framework.testRunner;
 
+import io.cucumber.testng.CucumberOptions;
+import io.cucumber.testng.FeatureWrapper;
+import io.cucumber.testng.PickleWrapper;
+import io.cucumber.testng.TestNGCucumberRunner;
 import me.isortegah.framework.util.DateUtil;
-import cucumber.api.CucumberOptions;
-import cucumber.api.testng.CucumberFeatureWrapper;
-import cucumber.api.testng.PickleEventWrapper;
-import cucumber.api.testng.TestNGCucumberRunner;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.testng.annotations.AfterClass;
@@ -26,9 +26,10 @@ public class TestRunnerCucumber {
         testNGCucumberRunner = new TestNGCucumberRunner(this.getClass());
     }
 
-    @Test(groups = "cucumber", description = "Runs Cucumber Feature", dataProvider = "features")
-    public void feature(PickleEventWrapper pickleWrapper, CucumberFeatureWrapper featureWrapper) throws Throwable {
-        testNGCucumberRunner.runScenario(pickleWrapper.getPickleEvent());
+    @SuppressWarnings("unused")
+    @Test(groups = "cucumber", description = "Runs Cucumber Feature", dataProvider = "scenarios")
+    public void feature(PickleWrapper pickleWrapper, FeatureWrapper featureWrapper) throws Throwable {
+        testNGCucumberRunner.runScenario(pickleWrapper.getPickle());
     }
 
     @Test
@@ -39,7 +40,7 @@ public class TestRunnerCucumber {
     }
 
     @DataProvider(parallel = true)
-    public Object[][] features() {
+    public Object[][] scenarios() {
         if (testNGCucumberRunner == null) {
             return new Object[0][0];
         }

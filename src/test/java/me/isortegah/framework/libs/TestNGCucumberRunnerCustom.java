@@ -1,103 +1,114 @@
 package me.isortegah.framework.libs;
 
-import cucumber.api.event.TestRunFinished;
-import cucumber.api.event.TestRunStarted;
-import cucumber.api.testng.*;
-import cucumber.runner.*;
-import cucumber.runtime.*;
-import cucumber.runtime.filter.Filters;
-import cucumber.runtime.formatter.PluginFactory;
-import cucumber.runtime.formatter.Plugins;
-import cucumber.runtime.io.MultiLoader;
-import cucumber.runtime.io.ResourceLoader;
-import cucumber.runtime.io.ResourceLoaderClassFinder;
-import cucumber.runtime.model.CucumberFeature;
-import cucumber.runtime.model.FeatureLoader;
-import gherkin.events.PickleEvent;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
+import io.cucumber.core.eventbus.EventBus;
+import io.cucumber.core.exception.CucumberException;
+import io.cucumber.core.feature.FeatureParser;
+import io.cucumber.core.gherkin.Feature;
+import io.cucumber.core.gherkin.Pickle;
+import io.cucumber.core.options.CucumberOptionsAnnotationParser;
+import io.cucumber.core.options.CucumberProperties;
+import io.cucumber.core.options.CucumberPropertiesParser;
+import io.cucumber.core.options.RuntimeOptions;
+import io.cucumber.core.plugin.PluginFactory;
+import io.cucumber.core.plugin.Plugins;
+import io.cucumber.core.resource.ClassLoaders;
+import io.cucumber.core.runtime.*;
+import io.cucumber.core.filter.Filters;
+import io.cucumber.core.runtime.FeaturePathFeatureSupplier;
+import io.cucumber.testng.*;
+
+import java.time.Clock;
 import java.util.List;
+import java.util.UUID;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
-public class TestNGCucumberRunnerCustom {
+import static java.util.stream.Collectors.toList;
 
-    private final EventBus bus;
-    private final Filters filters;
-    private final FeaturePathFeatureSupplier featureSupplier;
-    private final ThreadLocalRunnerSupplier runnerSupplier;
-    private final RuntimeOptions runtimeOptions;
+public final class TestNGCucumberRunnerCustom {
 
-    public TestNGCucumberRunnerCustom(Class clazz) throws URISyntaxException {
-        ClassLoader classLoader = clazz.getClassLoader();
-        ResourceLoader resourceLoader = new MultiLoader(classLoader);
+  /*rivate final Predicate<Pickle> filters;
+    private final List<Feature> features;
+    private final CucumberExecutionContext context;
 
-        RuntimeOptionsFactory runtimeOptionsFactory = new RuntimeOptionsFactory(clazz);
-        runtimeOptions = runtimeOptionsFactory.create();
 
-        runtimeOptions.getGlue();
-        List<URI> uniqueGlue = new ArrayList<>();
+    public TestNGCucumberRunnerCustom(Class<?> clazz) {
+        // Parse the options early to provide fast feedback about invalid
+        // options
+        RuntimeOptions propertiesFileOptions = new CucumberPropertiesParser()
+                .parse(CucumberProperties.fromPropertiesFile())
+                .build();
 
-        uniqueGlue.add(new URI("classpath:me/isortegah/framework/steps"));
+        RuntimeOptions annotationOptions = new CucumberOptionsAnnotationParser()
+                .withOptionsProvider(new TestNGCucumberOptionsProvider())
+                .parse(clazz)
+                .build(propertiesFileOptions);
 
-        runtimeOptions.getGlue().clear();
-        runtimeOptions.getGlue().addAll(uniqueGlue);
+        RuntimeOptions environmentOptions = new CucumberPropertiesParser()
+                .parse(CucumberProperties.fromEnvironment())
+                .build(annotationOptions);
 
-        ClassFinder classFinder = new ResourceLoaderClassFinder(resourceLoader, classLoader);
-        BackendModuleBackendSupplier backendSupplier = new BackendModuleBackendSupplier(resourceLoader, classFinder, runtimeOptions);
-        bus = new TimeServiceEventBus(TimeService.SYSTEM);
-        new Plugins(classLoader, new PluginFactory(), bus, runtimeOptions);
-        FeatureLoader featureLoader = new FeatureLoader(resourceLoader);
-        filters = new Filters(runtimeOptions);
-        this.runnerSupplier = new ThreadLocalRunnerSupplier(runtimeOptions, bus, backendSupplier);
-        featureSupplier = new FeaturePathFeatureSupplier(featureLoader, runtimeOptions);
+        RuntimeOptions runtimeOptions = new CucumberPropertiesParser()
+                .parse(CucumberProperties.fromSystemProperties())
+                .build(environmentOptions);
+
+        EventBus bus = new TimeServiceEventBus(Clock.systemUTC(), UUID::randomUUID);
+
+        Supplier<ClassLoader> classLoader = ClassLoaders::getDefaultClassLoader;
+        FeatureParser parser = new FeatureParser(bus::generateId);
+        FeaturePathFeatureSupplier featureSupplier = new FeaturePathFeatureSupplier(classLoader, runtimeOptions,
+                parser);
+
+        Plugins plugins = new Plugins(new PluginFactory(), runtimeOptions);
+        ExitStatus exitStatus = new ExitStatus(runtimeOptions);
+        plugins.addPlugin(exitStatus);
+        ObjectFactoryServiceLoader objectFactoryServiceLoader = new ObjectFactoryServiceLoader(runtimeOptions);
+        ObjectFactorySupplier objectFactorySupplier = new ThreadLocalObjectFactorySupplier(objectFactoryServiceLoader);
+        BackendServiceLoader backendSupplier = new BackendServiceLoader(clazz::getClassLoader, objectFactorySupplier);
+        this.filters = new Filters(runtimeOptions);
+        TypeRegistryConfigurerSupplier typeRegistryConfigurerSupplier = new ScanningTypeRegistryConfigurerSupplier(
+                classLoader, runtimeOptions);
+        ThreadLocalRunnerSupplier runnerSupplier = new ThreadLocalRunnerSupplier(runtimeOptions, bus, backendSupplier,
+                objectFactorySupplier, typeRegistryConfigurerSupplier);
+        this.context = new CucumberExecutionContext(bus, exitStatus, runnerSupplier);
+
+        // Start test execution now.
+        plugins.setSerialEventBusOnEventListenerPlugins(bus);
+        features = featureSupplier.get();
+        context.startTestRun();
+        features.forEach(context::beforeFeature);
     }
 
-    public void runScenario(PickleEvent pickle) throws Throwable {
-        //Possibly invoked in a multi-threaded context
-        Runner runner = runnerSupplier.get();
-        TestCaseResultListenerCustom testCaseResultListener = new TestCaseResultListenerCustom(runner.getBus(), runtimeOptions.isStrict());
-        runner.runPickle(pickle);
-        testCaseResultListener.finishExecutionUnit();
-
-        if (!testCaseResultListener.isPassed()) {
-            throw testCaseResultListener.getError();
-        }
+    public void runScenario(me.isortegah.framework.libs.testNG.Pickle pickle) throws Throwable {
+        context.runTestCase(runner -> {
+            try (TestCaseResultObserver observer = observe(runner.getBus())) {
+                Pickle cucumberPickle = pickle.getPickle();
+                runner.runPickle(cucumberPickle);
+                observer.assertTestCasePassed();
+            }
+        });
     }
+
 
     public void finish() {
-        bus.send(new TestRunFinished(bus.getTime()));
+        context.finishTestRun();
     }
 
-    /**
-     * @return returns the cucumber scenarios as a two dimensional array of {@link PickleEventWrapper}
-     * scenarios combined with their {@link CucumberFeatureWrapper} feature.
-     */
+
     public Object[][] provideScenarios() {
+        // Possibly invoked in a multi-threaded context
         try {
-            List<Object[]> scenarios = new ArrayList<Object[]>();
-            List<CucumberFeature> features = getFeatures();
-            for (CucumberFeature feature : features) {
-                for (PickleEvent pickle : feature.getPickles()) {
-                    if (filters.matchesFilters(pickle)) {
-                        scenarios.add(new Object[]{new PickleEventWrapperImpl(pickle),
-                                new CucumberFeatureWrapperImpl(feature)});
-                    }
-                }
-            }
-            return scenarios.toArray(new Object[][]{});
+            return features.stream()
+                    .flatMap(feature -> feature.getPickles().stream()
+                            .filter(filters)
+                            .map(cucumberPickle -> new Object[] {
+                                    new PickleWrapperImpl(new me.isortegah.framework.libs.testNG.Pickle(cucumberPickle)),
+                                    new FeatureWrapperImpl(feature) }))
+                    .collect(toList())
+                    .toArray(new Object[0][0]);
         } catch (CucumberException e) {
-            return new Object[][]{new Object[]{new CucumberExceptionWrapper(e), null}};
+            return new Object[][] { new Object[] { new CucumberExceptionWrapper(e), null } };
         }
-    }
-
-    List<CucumberFeature> getFeatures() {
-
-        List<CucumberFeature> features = featureSupplier.get();
-        bus.send(new TestRunStarted(bus.getTime()));
-        for (CucumberFeature feature : features) {
-            feature.sendTestSourceRead(bus);
-        }
-        return features;
-    }
+    }*/
 }

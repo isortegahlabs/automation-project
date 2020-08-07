@@ -1,7 +1,7 @@
 package me.isortegah.framework.testRunner;
 
-import cucumber.api.CucumberOptions;
-import cucumber.api.testng.AbstractTestNGCucumberTests;
+import io.cucumber.testng.CucumberOptions;
+import io.cucumber.testng.AbstractTestNGCucumberTests;
 import org.testng.annotations.DataProvider;
 
 

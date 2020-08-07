@@ -1,8 +1,8 @@
 package me.isortegah.framework.steps;
 
 import com.google.inject.Inject;
+import io.cucumber.java.en.When;
 import me.isortegah.framework.util.IsItFriday;
-import cucumber.api.java.en.When;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

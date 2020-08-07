@@ -2,13 +2,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-        <artifactId>cucumber4_selenium</artifactId>
+        <artifactId>automation-project</artifactId>
         <groupId>com.isortegah</groupId>
         <version>0.1.0-SNAPSHOT</version>
         <modelVersion>4.0.0</modelVersion>
 
     <properties>
-        <cucumber.version>4.2.6</cucumber.version>
+        <cucumber.version>6.4.0</cucumber.version>
         <testng.version>6.14.3</testng.version>
         <log4j2.version>2.11.1</log4j2.version>
         <guice.version>4.2.2</guice.version>
